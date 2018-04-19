@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import poisson
 
 def poissonProcess(t, rate, h):
     timeArray = np.linspace(0, t, int((t - 0) / h) + 1)
@@ -18,10 +19,15 @@ def generateDistributionOfPoissonProcess(t, rate, experiments=100, h=0.01):
 	timeArr, numberOfEventsArr = poissonProcess(t, rate, h)
 	numberOfEventsAtT[i] = numberOfEventsArr[-1]
 
+    k = np.arange(np.min(numberOfEventsAtT), np.max(numberOfEventsAtT), 1.0)
+    theoreticalMean = t * rate
+    theoretical = [poisson.pmf(i, theoreticalMean) for i in k]
+
     plt.hist(numberOfEventsAtT, normed=True, bins=np.arange(
 	np.min(numberOfEventsAtT), np.max(numberOfEventsAtT), 1.0), label=r'Distribution of $N(t)$')
-    plt.axvline(t * rate, color='r', label='Mean of Poisson Random variable')
-
+    plt.plot(k, theoretical, label='Theoretical Poisson distribution')
+    plt.axvline(theoreticalMean, color='r', label='Mean of Poisson Random variable')
+    
     plt.xlabel(r'$N(t)$')
     plt.ylabel('Normalized frequency')
     plt.legend()
